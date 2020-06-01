@@ -16,10 +16,10 @@ import (
 )
 
 func main() {
-	fmt.Println("hello world")
+	fmt.Println("start")
 	r := kafka.NewReader(kafka.ReaderConfig{
 		Brokers:        []string{"docker01.dev.mdlp.crpt.tech:9092"},
-		GroupID:        "consumer-group-id3",
+		GroupID:        "consumer-group-id4",
 		Topic:          "kiz-filter-topic",
 		MinBytes:       10e3, // 10KB
 		MaxBytes:       10e6, // 10MB
@@ -38,7 +38,7 @@ func main() {
 		json.Unmarshal(m.Value, &result)
 		id := result["sgtin"].(string)
 		//fmt.Println(result, id)
-		//fmt.Printf("message at topic/partition/offset %v/%v/%v: %s = %d\n", m.Topic, m.Partition, m.Offset, string(m.Key), len(m.Value))
+		fmt.Printf("message at topic/partition/offset %v/%v/%v: %s = %d\n", m.Topic, m.Partition, m.Offset, string(m.Key), len(m.Value))
 		saveToEs(es, id, string(m.Value))
 		r.CommitMessages(ctx, m)
 	}
@@ -56,6 +56,7 @@ func es() *elasticsearch.Client {
 	}
 	return es
 }
+
 func saveToEs(es *elasticsearch.Client, id string, value string) {
 
 	req := esapi.IndexRequest{
@@ -68,5 +69,5 @@ func saveToEs(es *elasticsearch.Client, id string, value string) {
 		log.Fatalf("Error getting response: %s", err1)
 	}
 	defer res1.Body.Close()
-	println("maybe save")
+	//println("maybe save")
 }
