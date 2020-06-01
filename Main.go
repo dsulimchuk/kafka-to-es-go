@@ -19,7 +19,7 @@ func main() {
 	fmt.Println("start")
 	r := kafka.NewReader(kafka.ReaderConfig{
 		Brokers:        []string{"docker01.dev.mdlp.crpt.tech:9092"},
-		GroupID:        "consumer-group-id4",
+		GroupID:        "consumer-group-id-test1",
 		Topic:          "kiz-filter-topic",
 		MinBytes:       10e3, // 10KB
 		MaxBytes:       10e6, // 10MB
@@ -58,16 +58,15 @@ func es() *elasticsearch.Client {
 }
 
 func saveToEs(es *elasticsearch.Client, id string, value string) {
-
 	req := esapi.IndexRequest{
 		Index:      "hello",
 		DocumentID: id,
 		Body:       strings.NewReader(value),
 	}
-	res1, err1 := req.Do(context.Background(), es)
+	resp, err1 := req.Do(context.Background(), es)
+	defer resp.Body.Close()
+	fmt.Println(resp)
 	if err1 != nil {
 		log.Fatalf("Error getting response: %s", err1)
 	}
-	defer res1.Body.Close()
-	//println("maybe save")
 }
